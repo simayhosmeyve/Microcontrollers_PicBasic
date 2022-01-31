@@ -1,0 +1,126 @@
+
+	NOLIST
+; PICBASIC PRO(TM) Compiler 2.60, (c) 1998, 2009 microEngineering Labs, Inc. All Rights Reserved. 
+
+LABEL?L macro Label
+        RST?RP
+    ifdef PM_USED
+        LALL
+Label
+        XALL
+    else
+Label
+    endif
+    endm
+
+NOT?WW macro Win, Wout
+    if (Wout == Win)
+        CHK?RP  Wout
+        comf    Wout, F
+        comf    Wout + 1, F
+    else
+        CHK?RP  Win
+        comf    Win, W
+        MOVE?AB Wout
+        CHK?RP  Win
+        comf    Win + 1, W
+        MOVE?AB  Wout + 1
+    endif
+    endm
+
+CMPGT?WCL macro Win, Cin, Label
+    if ((Cin) < 0)
+        L?GOTO  Label
+    else
+      if ((Cin) < 0ffffh)
+        MOVE?WW Win, R0
+        MOVE?CB (Cin) >> 8, R1 + 1
+        MOVE?CA low (Cin)
+        L?CALL  CMPGT
+        BIT?GOTO 0, STATUS, Z, Label
+      endif
+    endif
+    endm
+CMPGT_USED = 1
+
+CMPLT?WCL macro Win, Cin, Label
+    if ((Cin) >= 10000h)
+        L?GOTO  Label
+    else
+      if ((Cin) > 0)
+        MOVE?WW Win, R0
+        MOVE?CB (Cin) >> 8, R1 + 1
+        MOVE?CA low (Cin)
+        L?CALL  CMPLT
+        BIT?GOTO 0, STATUS, Z, Label
+      endif
+    endif
+    endm
+CMPLT_USED = 1
+
+SHIFTL?WCW macro Win, Cin, Wout
+    if ((Cin) == 1)
+        bcf     STATUS, C
+      if ((Wout) == (Win))
+        CHK?RP  Wout
+        rlf     Wout, F
+        rlf     Wout + 1, F
+      else
+        CHK?RP  Win
+        rlf     Win, W
+        MOVE?AB Wout
+        CHK?RP  Win
+        rlf     Win + 1, W
+        MOVE?AB Wout + 1
+      endif
+    else
+        MOVE?WW Win, R0
+        movlw   Cin
+        L?CALL  SHIFTL
+        MOVE?AWW R0, Wout
+    endif
+    endm
+SHIFTL_USED = 1
+
+SHIFTR?WCW macro Win, Cin, Wout
+    if ((Cin) == 1)
+        bcf     STATUS, C
+      if ((Wout) == (Win))
+        CHK?RP  Wout
+        rrf     Wout + 1, F
+        rrf     Wout, F
+      else
+        CHK?RP  Win
+        rrf     Win + 1, W
+        MOVE?AB Wout + 1
+        CHK?RP  Win
+        rrf     Win, W
+        MOVE?AB Wout
+      endif
+    else
+        MOVE?WW Win, R0
+        movlw   Cin
+        L?CALL  SHIFTR
+        MOVE?AWW R0, Wout
+    endif
+    endm
+SHIFTR_USED = 1
+
+GOTO?L macro Label
+        L?GOTO  Label
+    endm
+
+PAUSE?C macro Cin
+    if (((Cin) >> 8) == 0)
+        MOVE?CA Cin
+        L?CALL  PAUSE
+    else
+        MOVE?CB (Cin) >> 8, R1 + 1
+        MOVE?CA low (Cin)
+        L?CALL  PAUSEL
+    endif
+    endm
+PAUSE_USED = 1
+
+
+	LIST

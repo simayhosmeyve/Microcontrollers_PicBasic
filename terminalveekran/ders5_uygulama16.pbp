@@ -1,0 +1,35 @@
+DEFINE LCD_DREG PORTD 'LCD data portunun baðlandýðý pic portu'
+DEFINE LCD_DBIT 0 '4-bit bus için data bit(0 yada 4) baþlangýç'
+DEFINE LCD_RSREG PORTE 'LCD RS in baðlandýðý pic portu'
+DEFINE LCD_RSBIT 0 'RS'in baðlandýðý pic portE nin bit numarasý'
+DEFINE LCD_EREG PORTE 'LCD E'nin baðlandýðý pic portu'
+DEFINE LCD_EBIT 2 'LCD E'nin baðlandýðý pic portE nin bit numarasi'
+DEFINE LCD_BITS 8 
+ADCON1=7
+PAUSE 100
+'******************* LCD Tanýmlarý*********************
+DEFINE HSER_RCSTA 90h
+DEFINE HSER_TXSTA 24h
+DEFINE HSER_BAUD 9600
+DEFINE HSER_CLROERR 1
+
+
+i var byte
+j var byte
+
+label:
+
+hserin [i]
+
+select case j
+    case 0
+        lcdout $fe,129,i
+    case 1
+        lcdout $fe,128,i
+    case 2
+        lcdout $fe,130,i
+end select
+
+j=j+1
+
+goto label

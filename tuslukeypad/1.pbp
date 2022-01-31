@@ -1,0 +1,68 @@
+'******************* LCD Tanýmlarý*********************
+
+DEFINE LCD_DREG PORTD 'LCD data portunun baðlandýðý pic portu'
+DEFINE LCD_DBIT 0 '4-bit bus için data bit(0 yada 4) baþlangýç'
+DEFINE LCD_RSREG PORTE 'LCD RS in baðlandýðý pic portu'
+DEFINE LCD_RSBIT 0 'RS'in baðlandýðý pic portE nin bit numarasý'
+DEFINE LCD_EREG PORTE 'LCD E'nin baðlandýðý pic portu'
+DEFINE LCD_EBIT 2 
+DEFINE LCD_BITS 8 
+ADCON1=7
+PAUSE 100
+
+TRISC=%00000111
+TRISB=%00000000
+symbol in1=PortC.2
+symbol in2=PortC.1
+symbol in3=PortC.0
+
+i var byte:j var byte:k var byte:m var byte:n var byte
+i=" ":n=" ":j=1:k=" "
+lcdout $fe,1
+
+label:
+     j=j<<1
+    if j=16 then j=1
+    portb=j
+    
+   if in1=1 then 
+     if j=1 then i=1
+     if j=2 then i=4
+     if j=4 then i=7
+     if j=8 then k="*"
+     while in1=1
+     wend
+   endif  
+   if in2=1 then 
+     if j=1 then i=2
+     if j=2 then i=5
+     if j=4 then i=8
+     if j=8 then i=0
+     while in2=1
+     wend
+   endif
+   if in3=1 then 
+     if j=1 then i=3
+     if j=2 then i=6
+     if j=4 then i=9
+     if j=8 then k="#"
+     while in3=1
+     wend
+   endif
+
+       if i!=" " then 
+         if m<=8 then 
+           write m,i
+           m=m+1
+           i=" "
+         endif
+         if m=9 then    
+             while m!=0
+               m=m-1
+               read m,n 
+               lcdout #n
+               pause 100 
+             wend
+         endif
+       endif   
+goto label

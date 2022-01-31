@@ -1,0 +1,179 @@
+'******************* LCD Tanýmlarý*********************
+
+DEFINE LCD_DREG PORTD 'LCD data portunun baðlandýðý pic portu'
+DEFINE LCD_DBIT 0 '4-bit bus için data bit(0 yada 4) baþlangýç'
+DEFINE LCD_RSREG PORTE 'LCD RS in baðlandýðý pic portu'
+DEFINE LCD_RSBIT 0 'RS'in baðlandýðý pic portE nin bit numarasý'
+DEFINE LCD_EREG PORTE 'LCD E'nin baðlandýðý pic portu'
+DEFINE LCD_EBIT 2 'LCD E'nin baðlandýðý pic portE nin bit numarasi'
+DEFINE LCD_BITS 8 
+ADCON1=7
+PAUSE 100
+
+  
+DEFINE HSER_RCCSTA 90h
+define HSER_TXSTA 24h
+DEFINE HSER_BAUD 9600
+DEFINE HSER_CLROERR 1
+
+
+ '*********************lcd ekrana gosterme sekli***************
+'lcdout $fe,$40,14,14,4,4,4,0,0,0 'kafa ve govde'    '0'
+'i var byte
+'i=5
+
+'label:
+'lcdout $fe,1
+'lcdout "Birinci:"
+'lcdout $fe,$C0,"ikinci oyun:",#i
+'pause 1000
+'i=i-1
+'lcdout $fe,$89,0
+'pause 1000 
+'goto label
+ '**************************************************************
+ 
+ '********lcd adami asarkenki goruntu siralamasi****************
+'label:
+'    lcdout $fe,$40,14,14,4,4,4,0,0,0 'kafa ve govde'    '0'
+'    lcdout $fe,$48,14,14,4,28,4,0,0,0 'kafa,govde,sol kol'     '1'
+'    lcdout $fe,$50,14,14,4,31,4,0,0,0 'kafa,govde,sol kol,sag kol'  '2'
+
+'     lcdout $fe,$89,0
+'     pause 500
+'     lcdout $fe,$89,1
+'     pause 500
+'     lcdout $fe,$89,2
+'     pause 500
+ 
+' goto label
+ '**************************************************************
+
+'******************kaydirma islemi******************************
+'i var byte 
+'i=148
+'lcdout $fe,$60,14,14,4,31,4,10,17,0 'tum vucut' '4'
+'lcdout $fe,$68,0,4,8,31,8,4,0,0 'Ok isareti' '5' 
+'lcdout $fe,$70,0,0,4,31,4,10,17,0 'govde ve bacak' '6'
+'lcdout $fe,$78,0,0,0,0,0,14,14,0 'sadece kafa' '7'
+
+'label:
+'    lcdout $fe,1
+'    if i=135 then 
+'        lcdout $fe,135,6
+'        lcdout $fe,136,7
+'        lcdout $fe,$C0,"KAYBETTINIZ!"
+'        hserin [wait(" ")] 
+'    endif
+'    lcdout $fe,135,4
+'    lcdout $fe,i,5
+'    pause 300
+'    i=i-1
+'goto label
+'***************************************************************
+
+TRISB=0
+symbol ses=PortB.0
+
+i var byte                                                                               
+j var byte 
+k var byte
+l var byte 
+m var byte 
+x var byte 
+s var byte 'amaci kelimede kalan hamle sayisi tutmak' 
+a var byte  'amaci toplam dogru bilme sayisini tutmak'
+o var byte 'amaci kaydirma islemini tutmak'
+
+
+lcdout $fe,$40,14,14,4,4,4,0,0,0 'kafa ve govde'    '0'
+lcdout $fe,$48,14,14,4,28,4,0,0,0 'kafa,govde,sol kol'     '1'
+lcdout $fe,$50,14,14,4,31,4,0,0,0 'kafa,govde,sol kol,sag kol'  '2'
+lcdout $fe,$58,14,14,4,31,4,8,16,0 'kafa,govde,sol kol,sag kol,solayak' '3'
+lcdout $fe,$60,14,14,4,31,4,10,17,0 'tum vucut' '4'
+lcdout $fe,$68,0,4,8,31,8,4,0,0 'Ok isareti' '5' 
+lcdout $fe,$70,0,0,4,31,4,10,17,0 'govde ve bacak' '6'
+lcdout $fe,$78,0,0,0,0,0,14,14,0 'sadece kafa' '7'
+
+ 
+hserout["Adam asmaca oyununa hosgeldiniz!",13,10]
+
+label:
+    o=148
+    a=0
+    s=5
+    lcdout $fe,1
+    hserout["Lutfen 5 haneli kelime giriniz!:",13,10]
+    HSERIN [i]
+    sound ses,[10,15]
+    hserout ["*"]
+    hserin [j]
+    sound ses,[10,15]
+    hserout["*"]
+    hserin [k]
+    sound ses,[10,15]
+    hserout["*"]
+    hserin [l]
+    sound ses,[10,15]
+    hserout ["*"]
+    hserin [m]
+    sound ses,[10,15]
+    hserout ["*",13,10]
+    hserout["kelimeler girildi,ikinci oyuncu tahmine baslasin.",13,10]
+    goto incele:
+
+goto label
+
+
+incele:
+
+hserin [x]
+
+
+if x=i or x=j or x=k or x=l or x=m then 
+    sound ses,[20,15]
+    if x=i then lcdout $fe,$80,i
+    if x=j then lcdout $fe,$81,j
+    if x=k then lcdout $fe,$82,k
+    if x=l then lcdout $fe,$83,l
+    if x=m then lcdout $fe,$84,m
+    a=a+1
+    if a=5 then 
+        lcdout $fe,1
+        lcdout $fe,$80,"KAZANDINIZ!"
+        sound ses,[10,10,20,10,30,10]
+        lcdout $fe,$C0,"oynamak icin spaceye basiniz"
+        hserin [wait(" ")]
+        goto label  
+    endif
+else
+    sound ses,[20,15,10,15]    
+    lcdout $fe,$C0,"kalan hamle:",#s
+    if s=5 then lcdout $fe,$89,0
+    if s=4 then lcdout $fe,$89,1
+    if s=3 then lcdout $fe,$89,2
+    if s=2 then lcdout $fe,$89,3
+    if s=1 then lcdout $fe,$89,4
+    if s=0 then goto efekt
+    s=s-1
+endif
+ 
+goto incele
+
+
+efekt:
+    lcdout $fe,1
+    if o=135 then 
+        lcdout $fe,135,6
+        lcdout $fe,136,7
+        lcdout $fe,$C0,"KAYBETTINIZ!"
+        sound ses,[50,10,40,10,30,10]
+        hserout ["Tekrar oynamak icin spaceye basiniz",13,10]
+        hserin [wait(" ")]
+        goto label 
+    endif
+    lcdout $fe,135,4
+    lcdout $fe,o,5
+    pause 300
+    o=o-1
+goto efekt

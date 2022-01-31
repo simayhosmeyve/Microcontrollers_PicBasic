@@ -1,0 +1,94 @@
+include "lcdtanimlamalarý.pbp"
+
+
+TRISB=%11110000 'satýr ve sütunlar çýkýþ ve giriþ olarak ayarlandý
+portb=0
+
+symbol satir1=PortB.0
+symbol satir2=PortB.1
+symbol satir3=PortB.2
+symbol satir4=PortB.3
+symbol sutun1=PortB.4
+symbol sutun2=PortB.5
+symbol sutun3=PortB.6
+symbol sutun4=PortB.7
+
+i var byte
+j var byte
+m var byte
+k var byte
+n var byte
+g var byte
+ i=" ":j=" ":m=" "
+label:
+     satir1=1:satir2=0:satir3=0:satir4=0
+     if sutun1=1 then i=7
+     if sutun2=1 then i=8
+     if sutun3=1 then i=9
+     if sutun4=1 and i!=" " then j="/":m=i:i=" " 'i!=" " ifadesini, önce operatöre sonra sayýya basma ihtimaline karþý koyduk. lcd de toptan gösteriyor diye.
+     pause 5
+     satir1=0:satir2=1:satir3=0:satir4=0
+     if sutun1=1 then i=4
+     if sutun2=1 then i=5
+     if sutun3=1 then i=6
+     if sutun4=1 and i!=" " then j="*":m=i:i=" "
+     pause 5
+     satir1=0:satir2=0:satir3=1:satir4=0
+     if sutun1=1 then i=1
+     if sutun2=1 then i=2
+     if sutun3=1 then i=3
+     if sutun4=1 and i!=" " then j="-":m=i:i=" "
+     pause 5
+     satir1=0:satir2=0:satir3=0:satir4=1
+     if sutun2=1 then i=0 
+     if sutun3=1 then goto hesapla
+     if sutun4=1 and i!=" " then j="+":m=i:i=" "  
+     pause 5
+    
+    if i!=" " and j=" " and m=" " then lcdout $fe,1,#i
+    if m!=" " and j!=" " then lcdout $fe,1,#m,j 
+    if i!=" " and j!=" " and m!=" " then lcdout $fe,1,#m,j,#i
+    
+goto label
+
+hesapla:
+
+     select case j
+        case "/"
+            k=m/i     
+        case "*"
+            k=m*i
+        case "-"
+            
+            if m>=i then k=m-i
+            if m<i then g=1:k=i-m
+        case "+"
+            k=m+i
+     end select
+     
+    if g=0 then lcdout $fe,1,#m,j,#i,"=",#k                  'bu iki if'i, çýkartma iþleminde negatif sayý gösterebilsin diye koyduk 
+    if i>m and g=1 then lcdout $fe,1,#m,j,#i,"=-",#k : g=0
+    
+    
+    pause 100
+
+     if sutun1=1 then k=" ":i=" ":m=" ":j=" ":n=" ":lcdout $fe,1:goto label
+goto hesapla
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

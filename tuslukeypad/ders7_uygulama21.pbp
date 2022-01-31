@@ -1,0 +1,89 @@
+TRISB=%11110000 'satýr ve sütunlar çýkýþ ve giriþ olarak ayarlandý
+TRISD=0
+
+portb=0
+portd=0
+
+symbol satir1=PortB.0
+symbol satir2=PortB.1
+symbol satir3=PortB.2
+symbol satir4=PortB.3
+symbol sutun1=PortB.4
+symbol sutun2=PortB.5
+symbol sutun3=PortB.6
+symbol sutun4=PortB.7
+
+i var byte
+j var byte
+m var byte
+k var byte
+n var byte
+
+label:
+     satir1=1:satir2=0:satir3=0:satir4=0
+     if sutun1=1 then i=7
+     if sutun2=1 then i=8
+     if sutun3=1 then i=9
+     if sutun4=1 then j="/":m=i
+     pause 5
+     satir1=0:satir2=1:satir3=0:satir4=0
+     if sutun1=1 then i=4
+     if sutun2=1 then i=5
+     if sutun3=1 then i=6
+     if sutun4=1 then j="*":m=i
+     pause 5
+     satir1=0:satir2=0:satir3=1:satir4=0
+     if sutun1=1 then i=1
+     if sutun2=1 then i=2
+     if sutun3=1 then i=3
+     if sutun4=1 then j="-":m=i
+     pause 5
+     satir1=0:satir2=0:satir3=0:satir4=1
+     if sutun2=1 then i=0 
+     if sutun3=1 then goto hesapla
+     if sutun4=1 then j="+":m=i    
+     pause 5
+     portd=i
+goto label
+
+hesapla:
+
+     select case j
+        case "/"
+            k=m/i     
+        case "*"
+            k=m*i
+        case "-"
+            if m>=i then k=m-i
+            if m<i then k=i-m
+        case "+"
+            k=m+i
+     end select
+     
+     if k<10 then
+        portd=k
+     else
+         n=k dig 1
+         portd=k+n*6
+     endif
+
+     if sutun1=1 then k=0:i=0:m=0:j=0:n=0:goto label
+goto hesapla
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

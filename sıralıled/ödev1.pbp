@@ -1,0 +1,42 @@
+TRISB=%00000000           'led ler çýkýþ olarka atandý
+TRISC=%00000001           'buton giriþ olarak atandý
+portb=0                   'tüm led ler sönük baþlasýn
+symbol buton=PortB.7      'buton isimlendirildi
+i var word                'maximum 65555 deðerini alýr
+j var word
+
+
+i=1
+
+'label:
+'    while i<128
+'       pause 500
+'       i=i<<1
+'       portb=i
+'    wend
+'    while i>1
+'       pause 500
+'       i=i>>1
+'       portb=i
+'    wend
+'goto label
+
+
+basla:
+
+   i=1
+   while i<=128
+     j=~i  'deðili
+     portb=j
+     pause 500
+     i=i<<1 
+   wend 
+   i=128 
+   while i>=1  
+    j=~i
+    portb=j
+    pause 500
+    i=i>>1
+   wend
+
+goto basla
